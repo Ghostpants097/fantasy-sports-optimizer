@@ -52,7 +52,7 @@ def create_player(player: schemas.PlayerCreate, db: Session = Depends(get_db)):
     return db_player
 
 @app.get("/players/", response_model=List[schemas.PlayerRead])
-def read_players(skip: int = 0, limit: int = 100, sport: str = None, db: Session = Depends(get_db)):
+def read_players(skip: int = 0, limit: int = 1000, sport: str = None, db: Session = Depends(get_db)):
     query = db.query(player_models.Player)
     if sport:
         query = query.filter(player_models.Player.sport == sport)

@@ -65,16 +65,20 @@ def train_and_save_model():
     joblib.dump(model, MODEL_PATH)
     print(f"Model expertly serialized and saved to {MODEL_PATH}")
 
+_model_cache = None
+
 def predict_points(player_data_df: pd.DataFrame) -> np.ndarray:
     """
     Given a DataFrame matching the training features, dynamically predict points.
     Expected columns: ['salary_weight', 'form', 'matchup_difficulty', 'home_game', 'weather_factor']
     """
-    if not os.path.exists(MODEL_PATH):
-        raise FileNotFoundError(f"Model file not found at {MODEL_PATH}. Run training first.")
+    global _model_cache
+    if _model_cache is None:
+        if not os.path.exists(MODEL_PATH):
+            raise FileNotFoundError(f"Model file not found at {MODEL_PATH}. Run training first.")
+        _model_cache = joblib.load(MODEL_PATH)
         
-    model = joblib.load(MODEL_PATH)
-    return model.predict(player_data_df)
+    return _model_cache.predict(player_data_df)
 
 if __name__ == "__main__":
     train_and_save_model()
